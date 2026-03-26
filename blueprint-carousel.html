@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DPNow Blueprint — LinkedIn Carousel</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1a1d3a;font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:32px 16px;gap:20px}
+
+.controls{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+.ctrl-btn{background:rgba(41,171,226,0.15);border:1px solid #29ABE2;color:#29ABE2;padding:8px 20px;border-radius:99px;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s}
+.ctrl-btn:hover{background:#29ABE2;color:#fff}
+.slide-counter{color:#888;font-size:13px}
+.dots{display:flex;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:#333;transition:all .2s;cursor:pointer}
+.dot.active{background:#29ABE2;width:20px;border-radius:99px}
+
+/* SLIDE WRAPPER */
+.slide-wrap{position:relative;width:100%;max-width:540px}
+.slide{width:100%;aspect-ratio:1/1;border-radius:16px;overflow:hidden;display:none;position:relative}
+.slide.active{display:flex}
+
+/* ─────────────────────────────
+   SLIDE 1 — HOOK
+───────────────────────────── */
+.s1{background:linear-gradient(135deg,#1B1464 0%,#0a0d2e 100%);flex-direction:column;justify-content:space-between;padding:44px}
+.s1::before{content:'';position:absolute;right:-30px;top:-30px;width:260px;height:260px;border-radius:50%;background:rgba(41,171,226,0.06)}
+.s1 .tag{background:rgba(41,171,226,0.15);border:1px solid rgba(41,171,226,0.3);color:#29ABE2;font-size:12px;font-weight:700;padding:5px 14px;border-radius:99px;letter-spacing:1.5px;text-transform:uppercase;display:inline-block;margin-bottom:auto}
+.s1 .hook{font-size:38px;font-weight:900;color:#fff;line-height:1.1;margin:auto 0}
+.s1 .hook em{color:#29ABE2;font-style:normal;display:block}
+.s1 .sub{font-size:15px;color:rgba(255,255,255,.55);margin-top:16px}
+.s1 .swipe{font-size:13px;color:#29ABE2;font-weight:600;display:flex;align-items:center;gap:6px}
+.s1-logo{display:flex;align-items:center;gap:8px}
+.s1-logo span{color:rgba(255,255,255,.6);font-size:12px;font-weight:600}
+
+/* ─────────────────────────────
+   SLIDE 2 — PROBLEM
+───────────────────────────── */
+.s2{background:#fff;flex-direction:column;padding:40px}
+.s2 .eyebrow{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#dc2626;margin-bottom:16px}
+.s2 .title{font-size:26px;font-weight:900;color:#1B1464;line-height:1.2;margin-bottom:28px}
+.s2 .prob-list{display:flex;flex-direction:column;gap:12px;flex:1}
+.s2 .prob{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#fff5f5;border-radius:8px;border-left:3px solid #dc2626}
+.s2 .prob-text{font-size:14px;color:#333;font-weight:500;line-height:1.4}
+.s2 .prob-num{font-size:18px;font-weight:900;color:#dc2626;flex-shrink:0;min-width:24px}
+.s2 .bottom-tag{margin-top:auto;padding-top:16px;font-size:13px;color:#888;font-weight:500}
+.s2 .bottom-tag strong{color:#1B1464}
+
+/* ─────────────────────────────
+   SLIDE 3 — THE SHIFT
+───────────────────────────── */
+.s3{background:linear-gradient(160deg,#0d1440 0%,#1B1464 100%);flex-direction:column;padding:44px;justify-content:center}
+.s3 .eyebrow{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#29ABE2;margin-bottom:20px}
+.s3 .vs-wrap{display:flex;flex-direction:column;gap:12px;flex:1;justify-content:center}
+.s3 .vs-row{display:grid;grid-template-columns:1fr 40px 1fr;align-items:center;gap:8px}
+.s3 .old{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:12px 14px;text-align:center}
+.s3 .old span{font-size:13px;color:#fca5a5;font-weight:600}
+.s3 .new{background:rgba(41,171,226,.12);border:1px solid rgba(41,171,226,.25);border-radius:8px;padding:12px 14px;text-align:center}
+.s3 .new span{font-size:13px;color:#7dd3fc;font-weight:700}
+.s3 .arrow-mid{text-align:center;font-size:18px;color:#29ABE2}
+.s3 .bottom{margin-top:20px;text-align:center;font-size:15px;font-weight:700;color:#fff}
+.s3 .bottom em{color:#29ABE2;font-style:normal}
+
+/* ─────────────────────────────
+   SLIDE 4 — SOLUTION
+───────────────────────────── */
+.s4{background:#fff;flex-direction:column;padding:40px}
+.s4 .eyebrow{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#29ABE2;margin-bottom:10px}
+.s4 .title{font-size:26px;font-weight:900;color:#1B1464;line-height:1.2;margin-bottom:6px}
+.s4 .tagline{font-size:14px;color:#888;margin-bottom:20px}
+.s4 .pillars{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1}
+.s4 .pillar{background:#f0f4ff;border-radius:10px;padding:14px;border-top:3px solid #1B1464}
+.s4 .pillar .p-icon{font-size:20px;margin-bottom:6px}
+.s4 .pillar .p-title{font-size:13px;font-weight:800;color:#1B1464;margin-bottom:3px}
+.s4 .pillar .p-desc{font-size:12px;color:#666;line-height:1.4}
+.s4 .proof{margin-top:16px;background:linear-gradient(135deg,#1B1464,#0d2a6e);border-radius:10px;padding:14px;display:flex;gap:20px;justify-content:center}
+.s4 .proof-stat{text-align:center}
+.s4 .proof-stat .n{font-size:22px;font-weight:900;color:#29ABE2}
+.s4 .proof-stat .l{font-size:10px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px}
+
+/* ─────────────────────────────
+   SLIDE 5 — CTA
+───────────────────────────── */
+.s5{background:linear-gradient(135deg,#29ABE2 0%,#1B1464 100%);flex-direction:column;align-items:center;justify-content:center;padding:44px;text-align:center}
+.s5 .big{font-size:44px;font-weight:900;color:#fff;line-height:1;margin-bottom:10px}
+.s5 .big span{display:block;font-size:20px;font-weight:600;opacity:.8;margin-top:4px}
+.s5 .divider{width:60px;height:3px;background:rgba(255,255,255,.4);border-radius:99px;margin:20px auto}
+.s5 .cta-text{font-size:16px;color:rgba(255,255,255,.85);line-height:1.5;margin-bottom:28px;max-width:380px}
+.s5 .actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:340px}
+.s5 .btn-main{background:#fff;color:#1B1464;font-weight:800;font-size:15px;padding:14px 24px;border-radius:10px;border:none;cursor:pointer}
+.s5 .btn-sec{background:rgba(255,255,255,.15);color:#fff;font-weight:600;font-size:14px;padding:13px 24px;border-radius:10px;border:2px solid rgba(255,255,255,.3);cursor:pointer}
+.s5 .footer-tag{font-size:12px;color:rgba(255,255,255,.5);margin-top:20px;letter-spacing:.5px}
+
+.export-hint{color:#555;font-size:12px;text-align:center;margin-top:8px}
+</style>
+</head>
+<body>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <button class="ctrl-btn" onclick="prev()">← Prev</button>
+  <div class="dots" id="dotsRow"></div>
+  <button class="ctrl-btn" onclick="next()">Next →</button>
+</div>
+<div class="slide-counter" id="counter">Slide 1 of 5</div>
+
+<div class="slide-wrap">
+
+  <!-- SLIDE 1 — HOOK -->
+  <div class="slide s1 active" id="slide1">
+    <div class="s1-logo">
+      <svg width="24" height="24" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="rgba(255,255,255,0.1)"/><circle cx="18" cy="10" r="3" fill="#29ABE2"/><circle cx="10" cy="24" r="3" fill="#29ABE2"/><circle cx="26" cy="24" r="3" fill="#29ABE2"/><line x1="18" y1="10" x2="10" y2="24" stroke="#29ABE2" stroke-width="1.5"/><line x1="18" y1="10" x2="26" y2="24" stroke="#29ABE2" stroke-width="1.5"/><line x1="10" y1="24" x2="26" y2="24" stroke="#29ABE2" stroke-width="1.5"/></svg>
+      <span>Digital Procurement Now</span>
+    </div>
+    <div>
+      <div class="s1 tag" style="position:static;background:rgba(41,171,226,0.15);border:1px solid rgba(41,171,226,0.3);color:#29ABE2;font-size:12px;font-weight:700;padding:5px 14px;border-radius:99px;letter-spacing:1.5px;text-transform:uppercase;display:inline-block;margin-bottom:20px">Blueprint</div>
+      <div class="hook">Your Coupa<br>implementation<br><em>shouldn't take<br>12 months.</em></div>
+      <div class="sub">Swipe to see what's actually possible. 👇</div>
+    </div>
+    <div class="swipe">Swipe to see how →</div>
+  </div>
+
+  <!-- SLIDE 2 — PROBLEM -->
+  <div class="slide s2" id="slide2">
+    <div class="eyebrow">The reality</div>
+    <div class="title">Most S2P projects are broken before they start.</div>
+    <div class="prob-list">
+      <div class="prob"><div class="prob-num">1</div><div class="prob-text">18-month timelines that kill executive buy-in</div></div>
+      <div class="prob"><div class="prob-num">2</div><div class="prob-text">SI firms too expensive for mid-market budgets</div></div>
+      <div class="prob"><div class="prob-num">3</div><div class="prob-text">Platforms go live — but nobody uses them</div></div>
+      <div class="prob"><div class="prob-num">4</div><div class="prob-text">Spend stays off-process. ROI never arrives.</div></div>
+    </div>
+    <div class="bottom-tag">This is not a technology problem.<br><strong>It's an execution problem.</strong></div>
+  </div>
+
+  <!-- SLIDE 3 — THE SHIFT -->
+  <div class="slide s3" id="slide3">
+    <div class="eyebrow">A different way</div>
+    <div class="vs-wrap">
+      <div class="vs-row">
+        <div class="old"><span>12–18 month project</span></div>
+        <div class="arrow-mid">→</div>
+        <div class="new"><span>8 weeks to live</span></div>
+      </div>
+      <div class="vs-row">
+        <div class="old"><span>€300K+ SI engagement</span></div>
+        <div class="arrow-mid">→</div>
+        <div class="new"><span>€50K. Fixed.</span></div>
+      </div>
+      <div class="vs-row">
+        <div class="old"><span>Junior teams, scope creep</span></div>
+        <div class="arrow-mid">→</div>
+        <div class="new"><span>Senior practitioners</span></div>
+      </div>
+      <div class="vs-row">
+        <div class="old"><span>Uncertain ROI</span></div>
+        <div class="arrow-mid">→</div>
+        <div class="new"><span>30× ROI in Year 1</span></div>
+      </div>
+    </div>
+    <div class="bottom">The design is already done.<br><em>You just approve the build.</em></div>
+  </div>
+
+  <!-- SLIDE 4 — SOLUTION -->
+  <div class="slide s4" id="slide4">
+    <div class="eyebrow">Introducing</div>
+    <div class="title">DPNow Blueprint</div>
+    <div class="tagline">Coupa S2P. Fixed scope. Fixed price. Live in 8 weeks.</div>
+    <div class="pillars">
+      <div class="pillar"><div class="p-icon">🏗️</div><div class="p-title">Pre-built design</div><div class="p-desc">Proven templates from real deployments — not built from scratch</div></div>
+      <div class="pillar"><div class="p-icon">🎯</div><div class="p-title">Fixed everything</div><div class="p-desc">Scope, price, timeline. Zero surprises. Zero scope creep.</div></div>
+      <div class="pillar"><div class="p-icon">👥</div><div class="p-title">Senior team</div><div class="p-desc">Practitioners who've done this at P&G-scale companies</div></div>
+      <div class="pillar"><div class="p-icon">📈</div><div class="p-title">Adoption first</div><div class="p-desc">85%+ adoption at 90 days. ROI from week one of live.</div></div>
+    </div>
+    <div class="proof">
+      <div class="proof-stat"><div class="n">8 wks</div><div class="l">To go-live</div></div>
+      <div class="proof-stat"><div class="n">€50K</div><div class="l">Fixed price</div></div>
+      <div class="proof-stat"><div class="n">€1.5M+</div><div class="l">Value Y1</div></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 — CTA -->
+  <div class="slide s5" id="slide5">
+    <div class="big">8 weeks.<br><span>That's all it takes.</span></div>
+    <div class="divider"></div>
+    <div class="cta-text">If your team is still managing procurement on spreadsheets and email — Blueprint was built for you.</div>
+    <div class="actions">
+      <button class="btn-main" onclick="window.open('mailto:contact@dpnow.com?subject=Blueprint Scoping Call')">📅 Book a free scoping call</button>
+      <button class="btn-sec" onclick="window.open('mailto:contact@dpnow.com?subject=Blueprint ROI Calculator')">Calculate your ROI →</button>
+    </div>
+    <div class="footer-tag">Digital Procurement Now · Passionate · Kind · Accountable</div>
+  </div>
+
+</div>
+
+<div class="export-hint">💡 To export for LinkedIn: take a screenshot of each slide at 1:1 ratio and upload as a multi-image post</div>
+
+<script>
+let cur = 0;
+const total = 5;
+const dotsRow = document.getElementById('dotsRow');
+
+// Build dots
+for(let i=0;i<total;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>goTo(i);
+  dotsRow.appendChild(d);
+}
+
+function goTo(n){
+  document.getElementById('slide'+(cur+1)).classList.remove('active');
+  dotsRow.children[cur].classList.remove('active');
+  cur=n;
+  document.getElementById('slide'+(cur+1)).classList.add('active');
+  dotsRow.children[cur].classList.add('active');
+  document.getElementById('counter').textContent=`Slide ${cur+1} of ${total}`;
+}
+function next(){goTo((cur+1)%total);}
+function prev(){goTo((cur-1+total)%total);}
+
+// Swipe support
+let startX=0;
+const wrap=document.querySelector('.slide-wrap');
+wrap.addEventListener('touchstart',e=>startX=e.touches[0].clientX,{passive:true});
+wrap.addEventListener('touchend',e=>{
+  const diff=startX-e.changedTouches[0].clientX;
+  if(Math.abs(diff)>40){diff>0?next():prev();}
+},{passive:true});
+</script>
+</body>
+</html>
